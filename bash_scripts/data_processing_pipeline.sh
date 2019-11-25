@@ -47,3 +47,6 @@ python make_targets.py \
 	--processed_df "$OUTPUT_DIR/df_extract.pkl" \
 	--mimic_benchmark_dir "$MIMIC_BENCHMARK_DIR" \
 	--output_dir "$OUTPUT_DIR/finetuning/"
+
+rm "$OUTPUT_DIR/df_extract.pkl" 
+rm "$OUTPUT_DIR/df_grouped.pkl" 
