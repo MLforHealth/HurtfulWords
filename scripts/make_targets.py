@@ -172,6 +172,7 @@ acutes = [i for i in target_names if ccs.loc[i, 'type'] == 'acute']
 chronics = [i for i in target_names if ccs.loc[i, 'type'] == 'chronic']
 train_reader = PhenotypingReader(dataset_dir=args.mimic_benchmark_dir/'phenotyping' / 'train')
 test_reader = PhenotypingReader(dataset_dir=args.mimic_benchmark_dir/'phenotyping' / 'test')
+temp = []
 def has_any(dic, keys):
     return any([dic[i] == 1 for i in keys])
 
