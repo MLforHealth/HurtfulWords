@@ -33,4 +33,14 @@ Pretrains clinical BERT (initialized from SciBERT) with adversarial debiasing us
 
 ## Step 4: Finetuning on Downstream Tasks
 
-## Step 5: Log Loss & Sentence Completion
+## Step 5: Log Probabiltiy Bias Score
+Following procedures in [Kurita et al.](http://arxiv.org/abs/1906.07337), we calculate the 'log probability bias score' to evaluate biases in the BERT model. 
+
+## Step 6: Sentence Completion 
+
+## Step 6: Sentence Completion
+`scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. It loops through a list of models to be asessed. Template sentences can be specified directly in the script.
+
+To generate sentences, we loop through a list of variations for each demographic keyword, and see what the model will replace blank values with. 
+
+An example of input templates and results can be found in `fill_in_blanks_examples/templates/` and `fill_in_blanks_examples/results/`, respectively.
