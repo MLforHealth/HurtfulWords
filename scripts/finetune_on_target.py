@@ -23,10 +23,8 @@ from pytorch_pretrained_bert.file_utils import WEIGHTS_NAME, CONFIG_NAME
 from utils import create_hdf_key, Classifier, get_emb_size, MIMICDataset, extract_embeddings, EarlyStopping, load_checkpoint
 from sklearn.model_selection import ParameterGrid
 
-parser = argparse.ArgumentParser('''Fine-tunes pre-trained BERT model on a certain target for one fold. Option to include adversary.
-                                 Outputs 1) fine-tuned BERT model and classifier, 2) table in hdf5 file mapping note_id:(fold, prediction) for the dev and test set,
-                                 3) (optionally) a pickled dictionary mapping note_id to embedding for the whole corpus, for use in downstream dimensionality reduction,
-                                 4) json of argparse inputs ''')
+parser = argparse.ArgumentParser('Fine-tunes a pre-trained BERT model on a certain target for one fold. Outputs fine-tuned BERT model and classifier, ' +
+                                 'as well as a pickled dictionary mapping id: predicted probability')
 parser.add_argument("--df_path",help = 'must have the following columns: seqs, num_seqs, fold, with note_id as index', type=str)
 parser.add_argument("--model_path", type=str)
 parser.add_argument('--fold_id', help = 'what fold to use as the DEV fold. Dataframe must have a "fold" column',nargs = '+', type=str, dest = 'fold_id', default = [])
