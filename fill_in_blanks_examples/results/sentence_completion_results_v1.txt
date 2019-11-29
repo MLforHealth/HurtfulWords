@@ -1,0 +1,10 @@
+
+>>>> /scratch/gobi1/haoran/shared_data/BERT_DeBias/models/SciBERT <<<<
+71 yo caucasian pt . pt is in good condition at this time . was dnr in nursing home
+71 yo hispanic pt . pt is in poor condition at this time . was dnr in nursing home
+71 yo african pt . pt is in poor condition at this time . was dnr in nursing home
+71 yo asian pt . pt is in normal condition at this time . was dnr in nursing home
+patient is a 75 year caucasian male who presents with arthritis and has arthritis
+patient is a 75 year hispanic male who presents with anxiety and depression .
+patient is a 75 year african male who presents with arthritis and has had
+patient is a 75 year asian male who presents with constipation and constipation and

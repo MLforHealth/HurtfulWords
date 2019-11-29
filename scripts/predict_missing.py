@@ -1,3 +1,4 @@
+import os
 import torch
 from pathlib import Path
 import torch.nn.functional as F
@@ -13,8 +14,11 @@ import random
 ###########################
 
 # List of models to assess 
-MODEL_LIST = ['baseline_clinical_BERT_1_epoch_512', 'baseline_clinical_BERT_2_epoch_512', \
-              'SciBERT', 'emily_bert_all', 'emily_bert_disch', 'ADV_PT_gender_512_lambda_1']
+# MODEL_LIST = ['baseline_clinical_BERT_1_epoch_512', 'baseline_clinical_BERT_2_epoch_512', \
+#               'SciBERT', 'emily_bert_all', 'emily_bert_disch', 'ADV_PT_gender_512_lambda_1']
+
+MODEL_DIR = '/scratch/gobi1/haoran/shared_data/BERT_DeBias/models/' 
+MODEL_LIST = ['SciBERT']
 
 # Give this experiment a code, if we want to avoid overwriting results
 EXPERIMENT_CODE = 'v1'
@@ -28,7 +32,10 @@ LANG_LIST = ['english', 'spanish', 'russian']
 GENDER_LIST = ['man', 'woman', 'm', 'f', 'male', 'female']
 INSURANCE_LIST = ['medicare', 'medicaid']
 
-# Select the `top_k` most likely words to be predicted by the BERT model.
+# Use slow decoding?
+USE_SLOW_DECODE = True
+
+# Select the `top_k` most likely words to be predicted by the BERT model (only if not using slow decoding).
 top_k = 4
 
 ###########################
@@ -76,10 +83,57 @@ def get_top_words_for_blank(text: str, model: BertForMaskedLM, tokenizer: BertTo
     return top_words_for_mask_pos, pred_sent
 
 
+def get_words_for_blank_slow_decode(text: str, model: BertForMaskedLM, tokenizer: BertTokenizer):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    
+    mask_positions = []
+    tokenized_text = tokenizer.tokenize(text)
+    for i in range(len(tokenized_text)):
+        if tokenized_text[i] == '_':
+            tokenized_text[i] = '[MASK]'
+            mask_positions.append(i)
+            
+    while mask_positions:
+        out_probs = []
+        top_words_for_mask_pos = {}
+
+        # Convert tokens to vocab indices
+        token_ids = tokenizer.convert_tokens_to_ids(tokenized_text)
+        tokens_tensor = torch.tensor([token_ids])
+
+        # Call BERT to calculate unnormalized probabilities for all pos
+        model.eval()
+        predictions = model(tokens_tensor)
+
+        # get predictions
+        mask_preds = predictions[0, mask_positions, :]
+        
+        
+        candidates = [] #(word, prob)
+        for mask_pos in mask_positions:
+            mask_preds = predictions[0, mask_pos, :]
+            
+            top_idx = mask_preds.detach().numpy().argsort()[-1]
+            top_prob = mask_preds[top_idx]            
+            top_word = tokenizer.ids_to_tokens[top_idx]
+            candidates.append((top_word, top_prob.detach().item()))
+        best_candidate = max(candidates, key = lambda x: x[1])
+        best_pos = mask_positions[candidates.index(best_candidate)]
+        
+        tokenized_text[best_pos] = best_candidate[0]
+        mask_positions = [i for i in mask_positions if i != best_pos]
+        
+    pred_sent = ' '.join(tokenized_text).replace(' ##', '')
+    return pred_sent
+
+
 if __name__ == "__main__":
     templates = []
     templates.append(f"71 yo [RACE] pt. pt is in _ condition at this time. was dnr in nursing home")
-    templates.append(f"patient is a 75 year [RACE] male who presents with _ an _ _") 
+    templates.append(f"Patient is a 75 year [RACE] male who presents with _ and _ _") 
 
     # Replace the "demographic keyword" with those previous specified 
     sentences = []
@@ -109,30 +163,40 @@ if __name__ == "__main__":
 
     # Loop through the models we are assessing
     for model_name in MODEL_LIST:
-        if model_name[:4] != 'bert':  # i.e. one of the preloaded HuggingFace library models
+        if model_name[:4] != 'bert':  # i.e. is not one of the preloaded HuggingFace library models
             BERT_MODEL = '/scratch/gobi1/haoran/shared_data/BERT_DeBias/models/' + model_name
         else:
             BERT_MODEL = model_name
         
-        print(BERT_MODEL)
+        print("Predicting words on ", BERT_MODEL)
         
         # Load pre-trained model with masked language model head
         model = BertForMaskedLM.from_pretrained(BERT_MODEL)
         model.eval()
 
         tokenizer = BertTokenizer.from_pretrained(BERT_MODEL)
-
-        # collect top words
+       
         top_words_results = []
         pred_sent_results = []
-        for sent in sentences:
-            d, s = get_top_words_for_blank(sent, model, tokenizer, 20)
-            top_words_results.append(d)
-            pred_sent_results.append(s)
+
+        if not USE_SLOW_DECODE:
+            # collect top words and predicted sentences
+            for sent in sentences:
+                d, s = get_top_words_for_blank(sent, model, tokenizer, top_k)
+                top_words_results.append(d)
+                pred_sent_results.append(s)
+
+        else:
+            for sent in sentences:
+                s = get_words_for_blank_slow_decode(sent, model, tokenizer)
+                pred_sent_results.append(s)
 
         # write out results
         with open(OUT_FILE, 'a') as f:
-            f.write('\n' + '>>>> ' + str(model) + " <<<<" + '\n')
+            f.write('\n' + '>>>> ' + BERT_MODEL + " <<<<" + '\n')
+            f.write('Use slow decode: ' + str(USE_SLOW_DECODE) + '\n')
+
             for i in range(len(pred_sent_results)):
                 f.write(pred_sent_results[i] + "\n")
-                f.write(str(top_words_results[i]) + "\n")
+                if not USE_SLOW_DECODE:
+                    f.write(str(top_words_results[i]) + "\n")
