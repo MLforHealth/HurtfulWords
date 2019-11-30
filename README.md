@@ -40,6 +40,8 @@ Template sentences should be in the example format provided by `fill_in_blanks_e
 
 To calculate statistical significance, use the command `python scripts/statistical_significance.py fill_in_blanks_examples/results/log_probability_bias_predictions.tsv` (replace file names if necessary). This will print out a variety of statistical test p-values.
 
+`source bash_scripts/log_probability.sh` will also run both of the above commands to reproduce results reported in our paper.
+
 ## Step 6: Sentence Completion
 `scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. It loops through a list of models to be asessed. Template sentences can be specified directly in the script.
 
