@@ -36,7 +36,9 @@ Pretrains clinical BERT (initialized from SciBERT) with adversarial debiasing us
 ## Step 5: Log Probabiltiy Bias Score
 Following procedures in [Kurita et al.](http://arxiv.org/abs/1906.07337), we calculate the 'log probability bias score' to evaluate biases in the BERT model. 
 
-## Step 6: Sentence Completion 
+Template sentences should be in the example format provided by `fill_in_blanks_examples/templates.txt`. A CSV file denoting context key words and the context category should alshould also be suppled (see `fill_in_blanks_examples/attributes.csv`). An example output is given by `fill_in_blanks_examples/results/log_probability_bias_predictions.tsv`.
+
+To calculate statistical significance, use the command `python scripts/statistical_significance.py fill_in_blanks_examples/results/log_probability_bias_predictions.tsv` (replace file names if necessary). This will print out a variety of statistical test p-values.
 
 ## Step 6: Sentence Completion
 `scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. It loops through a list of models to be asessed. Template sentences can be specified directly in the script.

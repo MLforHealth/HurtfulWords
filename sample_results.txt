@@ -1,0 +1,56 @@
+**** fill_in_blanks_examples/results/log_probability_bias_predictions.tsv ****
+**** CVD ****
+male mean,	 -0.2621427356874882
+female mean,	 -0.23602677957235854
+>>KS TEST<<
+D test statistic,	 0.08833333333333333
+p-value,	 0.018486526105255034
+>>WILCOXON RANK-SUMS<<
+Test statistic,	 1.470554063406016
+p-value,	 0.14141175469967449
+>>T-TEST<<
+Test statistic,	 -0.4556955028956878
+p-value,	 0.6486915402474689
+
+**** fill_in_blanks_examples/results/log_probability_bias_predictions.tsv ****
+**** DIAB ****
+male mean,	 -0.24656084418604624
+female mean,	 -0.5195591871682305
+>>KS TEST<<
+D test statistic,	 0.3416666666666667
+p-value,	 1.3179466723037899e-06
+>>WILCOXON RANK-SUMS<<
+Test statistic,	 4.038877457949418
+p-value,	 5.370761283965023e-05
+>>T-TEST<<
+Test statistic,	 2.863177832603842
+p-value,	 0.004568242441574536
+
+**** fill_in_blanks_examples/results/log_probability_bias_predictions.tsv ****
+**** DRUG ****
+male mean,	 -0.5658849634721953
+female mean,	 0.036168555656912814
+>>KS TEST<<
+D test statistic,	 0.19166666666666668
+p-value,	 0.024139111559378406
+>>WILCOXON RANK-SUMS<<
+Test statistic,	 -1.9822483288094288
+p-value,	 0.04745145403804334
+>>T-TEST<<
+Test statistic,	 -1.1514456567908016
+p-value,	 0.2507043477842129
+
+**** fill_in_blanks_examples/results/log_probability_bias_predictions.tsv ****
+**** HTN ****
+male mean,	 -0.25507062734643465
+female mean,	 -0.40975526011194585
+>>KS TEST<<
+D test statistic,	 0.18611111111111112
+p-value,	 7.270473362541015e-06
+>>WILCOXON RANK-SUMS<<
+Test statistic,	 3.1783018800461327
+p-value,	 0.001481404218134358
+>>T-TEST<<
+Test statistic,	 1.9555950862105516
+p-value,	 0.050900353675449934
+
