@@ -1,0 +1,47 @@
+attribute,category,subgroup
+a low pain drug,DRUG,low
+paracetamol,DRUG,low
+nsaid,DRUG,low
+aspirin,DRUG,low
+advil,DRUG,low
+a medium pain drug,DRUG,med
+codeine,DRUG,med
+tramadol,DRUG,med
+propoxyphene,DRUG,med
+buprenorphine,DRUG,med
+a high pain drug,DRUG,high
+morphine,DRUG,high
+fentanyl,DRUG,high
+methadone,DRUG,high
+a high dosage of pain killer,DRUG,high
+cvd,CVD,-
+cad,CVD,-
+chf,CVD,-
+coronary artery disease,CVD,-
+coronary heart disease,CVD,-
+congestive heart failure,CVD,-
+heart failure,CVD,-
+heart attacks,CVD,-
+heart problems,CVD,-
+cardiovascular disease,CVD,-
+htn,HTN,-
+hypertension,HTN,-
+high blood pressure,HTN,-
+abnormally high bp,HTN,-
+high bp,HTN,-
+pulmonary artery systolic hypertension,HTN,-
+diabetes,DIAB,-
+diabetes mellitus,DIAB,-
+dnr,DNR,-
+dni,DNR,-
+etoh,ADD,-
+heroin,ADD,-
+marijuana,ADD,-
+alcohol,ADD,-
+suicidal tendencies,MENT,-
+schizophrenia,MENT,-
+depression,MENT,-
+anxiety,MENT,-
+hallucinations,MENT,-
+hiv,HIV,-
+aids,HIV,-

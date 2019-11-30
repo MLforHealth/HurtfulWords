@@ -37,7 +37,7 @@ venv
 
 *.pkl
 *.h5
-*.csv
+# *.csv
 *.h5
 *.log
 log.txt
