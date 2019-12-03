@@ -1,15 +1,13 @@
 import torch
 import torch.nn.functional as F
 from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM
-import math
 import pandas as pd
 import numpy as np
-import ipdb
 import argparse
-import ipdb
 import copy
+from tqdm import tqdm
 
-####### CONFIG ####### 
+####### CONFIG #######
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str)
 parser.add_argument('--demographic', type=str)
@@ -48,7 +46,7 @@ all_tgt_words = {'GEND': {'male': ['man', 'he', 'male', 'm'],
                  'INSUR': {'medicare': ['medicare'],
                           'medicaid': ['medicaid'],
                           'private': ['private']},
-                 
+
                  'LANG': {'eng': ['english'],
                          'non-eng': ['russian','chinese','korean','spanish']}
                  }
@@ -71,7 +69,7 @@ for ATTRIBUTE in categories:
         if ATTRIBUTE in template:
             for words in attr_df.loc[attr_df['category'] == ATTRIBUTE, :].attribute:
                 tmp = copy.deepcopy(template)
-                
+
                 tgt_text = tmp.replace("[" + ATTRIBUTE + "]", words)
                 prior_text = tmp.replace("[" + ATTRIBUTE + "]", '_ ' * len(words.split(" ")))
                 my_tgt_texts.append(tgt_text)
@@ -93,15 +91,15 @@ def find_tgt_pos(text, tgt):
 def predict_word(text: str, model: BertForMaskedLM, tokenizer: BertTokenizer, tgt_word: str, tgt_pos: int):
     # print('Template sentence: ', text)
     mask_positions = []
-    
-    # insert mask tokens 
+
+    # insert mask tokens
     tokenized_text = tokenizer.tokenize(text)
-    
+
     for i in range(len(tokenized_text)):
         if tokenized_text[i] == '_':
             tokenized_text[i] = '[MASK]'
             mask_positions.append(i)
- 
+
     # Convert tokens to vocab indices
     token_ids = tokenizer.convert_tokens_to_ids(tokenized_text)
     tokens_tensor = torch.tensor([token_ids])
@@ -109,10 +107,10 @@ def predict_word(text: str, model: BertForMaskedLM, tokenizer: BertTokenizer, tg
     # Call BERT to calculate unnormalized probabilities for all pos
     model.eval()
     predictions = model(tokens_tensor)
-    
+
     # normalize by softmax
     predictions = F.softmax(predictions, dim=2)
-    
+
     # For the target word position, get probabilities for each word of interest
     normalized = predictions[0, tgt_pos, :]
     out_prob = normalized[tokenizer.vocab[tgt_word]].item()
@@ -122,11 +120,11 @@ def predict_word(text: str, model: BertForMaskedLM, tokenizer: BertTokenizer, tg
         predicted_index = torch.argmax(predictions[0, mask_pos, :]).item()
         predicted_token = tokenizer.convert_ids_to_tokens([predicted_index])[0]
         tokenized_text[mask_pos] = predicted_token
-    
+
     for mask_pos in mask_positions:
         tokenized_text[mask_pos] = "_" + tokenized_text[mask_pos] + "_"
     pred_sent = ' '.join(tokenized_text).replace(' ##', '')
-    print(pred_sent)
+    # print(pred_sent)
     return out_prob, pred_sent
 
 
@@ -139,10 +137,10 @@ results['log_probs'] = []
 results['pred_sent'] = []
 
 # Run through all generated permutations
-for i in range(len(my_tgt_texts)):
+for i in tqdm(range(len(my_tgt_texts))):
     tgt_text = my_tgt_texts[i]
     prior_text = my_prior_texts[i]
-    
+
     for key, val in TARGET_DICT.items():
         # loop through the genders
         for tgt_word in val:
@@ -153,12 +151,12 @@ for i in range(len(my_tgt_texts)):
             # calculate log and store in results dictionary
             tgt_probs, pred_sent, prior_probs = np.array(tgt_probs), np.array(pred_sent), np.array(prior_probs)
             log_probs = np.log(tgt_probs / prior_probs)
-            
+
             results['categories'].append(my_categories[i])
             results['demographic'].append(key)
             results['tgt_text'].append(my_tgt_texts[i])
             results['log_probs'].append(log_probs)
-            results['pred_sent'].append(pred_sent) 
+            results['pred_sent'].append(pred_sent)
 
 # Write results to tsv
 results = pd.DataFrame(results)
