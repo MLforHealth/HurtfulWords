@@ -3,6 +3,12 @@
 ## Paper
 If you use this code in your research, please cite the following publication:
 
+## Pretrained Models
+The pretrained BERT models used in our experiments are available to download here:
+- [Baseline_Clinical_BERT](https://www.cs.toronto.edu/pub/haoran/hurtfulwords/baseline_clinical_BERT_1_epoch_512.tar.gz)
+- [Attempt_Adversarially_Debiased_Clinical_BERT](https://www.cs.toronto.edu/pub/haoran/hurtfulwords/adv_clinical_BERT_1_epoch_512.tar.gz)
+
+
 ## Step 0: Environment and Prerequisites
 - Before starting, go to the [MIMIC-benchmarks repository](https://github.com/YerevaNN/mimic3-benchmarks), and follow all of the steps in the `Building a benchmark` section.
 - Run the following commands to clone this repo and create the Conda environment
@@ -23,28 +29,33 @@ Reads in the tables from MIMIC and pregenerates data for clinical BERT pretraini
 ## Step 2: Training Baseline Clinical BERT
 Pretrains baseline clinical BERT (initialized from SciBERT) for 1 epoch on sequences of length 128, then 1 epoch on sequences of length 512.
 - In `bash_scripts/train_baseline_clinical_BERT.sh`, update `BASE_DIR`, `OUTPUT_DIR`, and `SCIBERT_DIR`. These variables should have the same values as in step 1.
-- Run `bash_scripts/train_baseline_clinical_BERT.sh` on a GPU cluster. The resultant model will be saved in `$OUTPUT_DIR/models/baseline_clinical_BERT_1_epoch_512/`.
+- Run `bash_scripts/train_baseline_clinical_BERT.sh` on a GPU cluster. The resultant model will be saved in `${OUTPUT_DIR}/models/baseline_clinical_BERT_1_epoch_512/`.
 
 ## Step 3: Training Adversarial Clinical BERT
 Pretrains clinical BERT (initialized from SciBERT) with adversarial debiasing using gender as the protected attribute, for 1 epoch on sequences of length 128, then 1 epoch on sequences of length 512. 
 - In `bash_scripts/train_adv_clinical_bert.sh`, update `BASE_DIR`, `OUTPUT_DIR`, and `SCIBERT_DIR`. These variables should have the same values as in step 1.
-- Run `bash_scripts/train_adv_clinical_bert.sh` on a GPU cluster. The resultant model will be saved in `$OUTPUT_DIR/models/adv_clinical_BERT_1_epoch_512/`.
+- Run `bash_scripts/train_adv_clinical_bert.sh` on a GPU cluster. The resultant model will be saved in `${OUTPUT_DIR}/models/adv_clinical_BERT_1_epoch_512/`.
 
 
 ## Step 4: Finetuning on Downstream Tasks
+Generates static BERT representations for the downstream tasks created in Step 1. Trains various neural networks (grid searching over hyperparameters) on these tasks.
+- In `bash_scripts/pregen_embs.sh`, update `BASE_DIR` and `OUTPUT_DIR`. Run this script on a GPU cluster. 
+- In `bash_scripts/finetune_on_target.sh`, update `BASE_DIR` and `OUTPUT_DIR`. This script will output a trained model for a particular (target, model) combination, in the `${OUTPUT_DIR}/models/finetuned/` folder. The Python script `bash_scripts/run_clinical_targets.py` will queue up the 114 total (target, model) experiments conducted, as Slurm jobs. This script will have to be modified accordingly for other systems.
 
-## Step 5: Log Probabiltiy Bias Score
-Following procedures in [Kurita et al.](http://arxiv.org/abs/1906.07337), we calculate the 'log probability bias score' to evaluate biases in the BERT model. 
+## Step 5: Analyze Downstream Task Results
+Evalutes test-set predictions of the trained models, by generating various fairness metrics.
+- In `bash_scripts/analyze_results.sh`, update `BASE_DIR` and `OUTPUT_DIR`. Run this script, which will output a .xlsx file containing fairness metrics to each of the finetuned model folders.
+- The Jupyter Notebook `notebooks/MergeResults.ipynb` will read in each of the generated metrics files and aggregate them into a single dataframe, which can be viewed in the notebook or saved to disk.
 
-Template sentences should be in the example format provided by `fill_in_blanks_examples/templates.txt`. A CSV file denoting context key words and the context category should alshould also be suppled (see `fill_in_blanks_examples/attributes.csv`). An example output is given by `fill_in_blanks_examples/results/log_probability_bias_predictions.tsv`.
+## Step 6: Log Probabiltiy Bias Scores
+Following procedures in [Kurita et al.](http://arxiv.org/abs/1906.07337), we calculate the 'log probability bias score' to evaluate biases in the BERT model. Template sentences should be in the example format provided by `fill_in_blanks_examples/templates.txt`. A CSV file denoting context key words and the context category should alshould also be suppled (see `fill_in_blanks_examples/attributes.csv`). 
 
-To calculate statistical significance, use the command `python scripts/statistical_significance.py fill_in_blanks_examples/results/log_probability_bias_predictions.tsv` (replace file names if necessary). This will print out a variety of statistical test p-values.
+This step can be done independently of steps 4 and 5.
+- In `bash_scripts/log_probability.sh`, update `BASE_DIR` and `OUTPUT_DIR`. Run this script.
+- The statistical significance results can be found in `${OUTPUT_DIR}/log_probability_statistical_significance.txt`. 
 
-`source bash_scripts/log_probability.sh` will also run both of the above commands to reproduce results reported in our paper.
+## Step 7: Sentence Completion
+`scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. Template sentences can be specified directly in the script.
 
-## Step 6: Sentence Completion
-`scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. It loops through a list of models to be asessed. Template sentences can be specified directly in the script.
-
-To generate sentences, we loop through a list of variations for each demographic keyword, and see what the model will replace blank values with. 
-
-An example of input templates and results can be found in `fill_in_blanks_examples/templates/` and `fill_in_blanks_examples/results/`, respectively.
+This step can be done independently of steps 1-6.
+- In `scripts/predict_missing.py`, update `OUTPUT_DIR` and `SCIBERT_DIR`. Run this script in the Conda environment. The results (most likely sentence, as well as top 20 words) can be found in `${OUTPUT_DIR}/sentence_completion_results.txt`.
