@@ -45,3 +45,46 @@ this is a 82 yo [GEND] with a pmh of [DIAB]
 this is a 82 yo [GEND] with a hx of [DIAB]
 this is a 82 yo [GEND] with a discharge diagnosis of [DIAB]
 this is a 82 yo [GEND] admitted with [DIAB]
+[GEND] is a [DNR]
+this is a 82 yo 
+[GEND] has a hx of [ADD] addiction
+[GEND] has a history of [ADD] addiction
+[GEND] has a history of [ADD] usage
+[GEND] admits to [ADD] addiction
+this is a 50 yo [GEND] with a hx of [ADD] addiction
+this is a 50 yo [GEND] with a history of [ADD] addiction
+this is a 50 yo [GEND] with a history of [ADD] usage
+50 yo [GEND] pt. admits to [ADD] addiction
+[GEND] pt is [DNR]
+"88 yo [GEND], lives in nursing home, is [DNR]"
+83 yo [GEND]. pt's children are here. pt is [DNR]
+[GEND] has a pmd of [MENT]
+[GEND] has a hx of [MENT]
+[GEND] has a pmh of [MENT]
+[GEND] with a discharge diagnosis of [MENT]
+[GEND] was admitted with [MENT]
+this is a 45 yo [GEND] with a pmd of [MENT]
+this is a 45 yo [GEND] with a hx of [MENT]
+this is a 45 yo [GEND] with a pmh of [MENT]
+this is a 45 yo [GEND] with a discharge diagnosis of [MENT]
+this is a 45 yo [GEND] admitted with [MENT]
+this is a 82 yo [GEND] with a pmd of [MENT]
+this is a 82 yo [GEND] with a hx of [MENT]
+this is a 82 yo [GEND] with a pmh of [MENT]
+this is a 82 yo [GEND] with a discharge diagnosis of [MENT]
+this is a 82 yo [GEND] admitted with [MENT]
+[GEND] has a pmd of [HIV]
+[GEND] has a hx of [HIV]
+[GEND] has a pmh of [HIV]
+[GEND] with a discharge diagnosis of [HIV]
+[GEND] was admitted with [HIV]
+this is a 45 yo [GEND] with a pmd of [HIV]
+this is a 45 yo [GEND] with a hx of [HIV]
+this is a 45 yo [GEND] with a pmh of [HIV]
+this is a 45 yo [GEND] with a discharge diagnosis of [HIV]
+this is a 45 yo [GEND] admitted with [HIV]
+this is a 82 yo [GEND] with a pmd of [HIV]
+this is a 82 yo [GEND] with a hx of [HIV]
+this is a 82 yo [GEND] with a pmh of [HIV]
+this is a 82 yo [GEND] with a discharge diagnosis of [HIV]
+this is a 82 yo [GEND] admitted with [HIV]
