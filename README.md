@@ -51,8 +51,8 @@ Evalutes test-set predictions of the trained models, by generating various fairn
 Following procedures in [Kurita et al.](http://arxiv.org/abs/1906.07337), we calculate the 'log probability bias score' to evaluate biases in the BERT model. Template sentences should be in the example format provided by `fill_in_blanks_examples/templates.txt`. A CSV file denoting context key words and the context category should alshould also be suppled (see `fill_in_blanks_examples/attributes.csv`). 
 
 This step can be done independently of steps 4 and 5.
-- In `bash_scripts/log_probability.sh`, update `BASE_DIR` and `OUTPUT_DIR`. Run this script.
-- The statistical significance results can be found in `${OUTPUT_DIR}/log_probability_statistical_significance.txt`. 
+- In `bash_scripts/log_probability.sh`, update `BASE_DIR`, `OUTPUT_DIR`, and `MODEL_NAME`. Run this script.
+- The statistical significance results can be found in `${OUTPUT_DIR}/${MODEL_NAME}_log_scores.tsv`. 
 
 ## Step 7: Sentence Completion
 `scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. Template sentences can be specified directly in the script.

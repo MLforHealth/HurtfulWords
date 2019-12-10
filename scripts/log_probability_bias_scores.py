@@ -11,7 +11,6 @@ from tqdm import tqdm
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str)
 parser.add_argument('--demographic', type=str)
-parser.add_argument('--attribute', type=str)
 parser.add_argument('--template_file', type=str)
 parser.add_argument('--attributes_file', type=str)
 parser.add_argument('--out_file', type=str)
@@ -19,7 +18,6 @@ args = parser.parse_args()
 
 BERT_MODEL = args.model
 DEMOGRAPHIC = args.demographic
-ATTRIBUTE = args.attribute
 TEMPLATE_FILE = args.template_file
 ATTRIBUTES_FILE = args.attributes_file
 OUT_FILE = args.out_file
