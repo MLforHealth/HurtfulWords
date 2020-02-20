@@ -44,6 +44,34 @@ mapping={
         'Missing' : 2
     }
 }
+
+newmapping={
+    'gender':{
+        'M': 0,
+        'F': 1
+    },
+    'ethnicity_to_use': {
+        'WHITE': 0,
+        'BLACK': 1,
+        'ASIAN': 2,
+        'HISPANIC/LATINO': 3,
+        'OTHER': 4,
+        'UNKNOWN/NOT SPECIFIED': 5
+    },
+    'insurance': {
+        'Medicare': 0,
+        'Private': 1,
+        'Medicaid': 2,
+        'Government': 2,
+        'Self Pay':3
+    },
+    'language_to_use': {
+        'English': 0,
+        'Other': 1,
+        'Missing' : 2
+    }
+}
+
 drop_groups = {
     'ethnicity_to_use': ['UNKNOWN/NOT SPECIFIED'],
     'language_to_use': ['Missing'],

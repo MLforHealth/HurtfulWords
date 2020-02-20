@@ -251,7 +251,7 @@ def main():
         domain_mapping = Constants.newmapping[args.domain_of_interest]
     else:
         domain_mapping = Constants.mapping[args.domain_of_interest]
-    num_categories = len(domain_mapping) - len(Constants.drop_groups[args.domain_of_interest])
+    num_categories = len(set(domain_mapping.values()))
 
     # check that data has been pregenerated for the specified epochs
     samples_per_epoch = []
