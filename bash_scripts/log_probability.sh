@@ -4,7 +4,8 @@ source activate hurtfulwords
 BASE_DIR="/h/haoran/projects/HurtfulWords/" 
 OUTPUT_DIR="/h/haoran/projects/HurtfulWords/data/"
 #MODEL_NAME="baseline_clinical_BERT_1_epoch_512"
-MODEL_NAME="adv_clinical_BERT_1_epoch_512" 
+#MODEL_NAME="adv_clinical_BERT_1_epoch_512" 
+MODEL_NAME="SciBERT"
 
 cd "$BASE_DIR/scripts"
 
