@@ -24,7 +24,7 @@ python finetune_on_target_multitask.py \
     --target_type "$1" \
     --model_path "${OUTPUT_DIR}/models/$2" \
     --output_dir "${OUTPUT_DIR}/models/finetuned/${2}/${1}/${3}/" \
-    --train_batch_size 64 \
+    --train_batch_size 16 \
     --other_fields age sofa sapsii_prob sapsii_prob oasis oasis_prob \
     --dev_folds "$3" \
     --test_folds "$4" "$5" \
