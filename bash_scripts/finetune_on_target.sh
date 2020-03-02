@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --partition gpu
+#SBATCH --partition p100 
 #SBATCH --gres gpu:2
 #SBATCH -c 8
 #SBATCH --output=finetune_%A.out
-#SBATCH --mem 60gb
+#SBATCH --mem 40gb
 
 # $1 - target type {inhosp_mort, phenotype_first, phenotype_all, outhosp_mort}
 # $2 - BERT model name {baseline_clinical_BERT_1_epoch_512, adv_clinical_BERT_1_epoch_512}

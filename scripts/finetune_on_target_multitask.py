@@ -142,8 +142,8 @@ if args.use_adversary:
     discriminator = Discriminator(EMB_SIZE, args.adv_layers, len(mapping[protected_group]), args.lm)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-assert(device == 'cuda')
 print(device)
+assert(torch.cuda.is_available())
 n_gpu = torch.cuda.device_count()
 device_ids = [i for i in range(torch.cuda.device_count())]
 model = model.to(device)
