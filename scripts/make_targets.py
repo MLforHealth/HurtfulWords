@@ -1,4 +1,3 @@
-# code is a mess since it's mostly exported from a jupyter notebook
 import os
 import pandas as pd
 import Constants
@@ -7,6 +6,7 @@ from readers import PhenotypingReader, InHospitalMortalityReader
 import yaml
 from argparse import ArgumentParser
 from pathlib import Path
+import numpy as np
 
 parser = ArgumentParser()
 parser.add_argument('--processed_df', type=Path, required=True)
@@ -140,8 +140,8 @@ for i in range(test_reader.get_number_of_examples()):
         dic['fold'] = 'test'
         temp.append(dic)
 t2 = pd.DataFrame(temp)
-# split training set into folds, stratify by inhosp_mort
-subjects = t2.loc[t2['fold'] != 'test',['subject_id', 'inhosp_mort']].groupby('subject_id').first().reset_index()
+# redistribute training/test set into folds, stratify by inhosp_mort
+subjects = t2[['subject_id', 'inhosp_mort']].groupby('subject_id').first().reset_index()
 kf = KFold(n_splits = 10, shuffle = True, random_state = 42)
 for c,j in enumerate(kf.split(subjects, groups = subjects['inhosp_mort'])):
     for k in j[1]:
@@ -208,7 +208,7 @@ for i in range(test_reader.get_number_of_examples()):
 
 cols = target_names + ['any_chronic', 'any_acute', 'any_disease']
 t3 = pd.DataFrame(temp)
-subjects = t3.loc[t3['fold'] != 'test',['subject_id', 'any_disease']].groupby('subject_id').first().reset_index()
+subjects = t3[['subject_id', 'any_disease']].groupby('subject_id').first().reset_index()
 kf = KFold(n_splits = 10, shuffle = True, random_state = 42)
 for c,j in enumerate(kf.split(subjects, groups = subjects['any_disease'])):
     for k in j[1]:
@@ -269,9 +269,32 @@ for i in range(test_reader.get_number_of_examples()):
         temp.append(dic)
 t4 = pd.DataFrame(temp)
 t4 = pd.merge(t4, df[['note_id', 'category']], on = 'note_id', how = 'left')
-subjects = t4.loc[t4['fold'] != 'test',['subject_id', 'any_disease']].groupby('subject_id').first().reset_index()
+subjects = t4[['subject_id', 'any_disease']].groupby('subject_id').first().reset_index()
 kf = KFold(n_splits = 10, shuffle = True, random_state = 42)
 for c,j in enumerate(kf.split(subjects, groups = subjects['any_disease'])):
     for k in j[1]:
         t4.loc[t4['subject_id'] == subjects.loc[k]['subject_id'], 'fold'] = str(c+1)
 t4.to_pickle(args.output_dir / 'phenotype_first')
+
+
+'''
+Out of Hospital Mortality
+Using only discharge notes for people have not died. Predict whether they will die exactly between the next x to y months.
+Specifically, notes for people whose death date is within $\pm $24 hours of the discharge note chart date (i.e. they were discharged due to death) were dropped.
+'''
+pairs = Constants.outhosp_mort_pairs
+temp = df.loc[df.category == 'Discharge summary',
+                           ['note_id', 'subject_id', 'seqs', 'num_seqs', 'gender', 'insurance', 'ethnicity_to_use', 'chartdate', 'dod_merged', 'language_to_use'] + other_features]
+t5 = temp[~((temp['dod_merged']- temp['chartdate']) <= pd.Timedelta(days = 1))]
+t5['dmonth'] = (t5['dod_merged']- t5['chartdate'])/np.timedelta64(1, 'M')
+for beg, end in pairs:
+    name = '%s%smortality'%(beg, end)
+    t5.loc[(t5['dmonth'] <= end)
+                    & (t5['dmonth']>= beg), name] = 1
+    t5[name] = t5[name].fillna(0)
+subjects = t5[['subject_id', name]].groupby('subject_id').first().reset_index() #stratify by last pair
+kf = KFold(n_splits = 12, shuffle = True, random_state = 42)
+for c,j in enumerate(kf.split(subjects, groups = subjects[name])):
+    for k in j[1]:
+        t5.loc[t5['subject_id'] == subjects.loc[k]['subject_id'], 'fold'] = str(c+1)
+t5.to_pickle(args.output_dir / 'outhosp_mort')

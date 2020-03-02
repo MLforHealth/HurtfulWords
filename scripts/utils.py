@@ -42,11 +42,12 @@ def create_hdf_key(d):
     return hashlib.md5(str(__nested_sorted_repr(d)).encode()).hexdigest()
 
 class Classifier(nn.Module):
-    def __init__(self, input_dim, num_layers, dropout_prob, task_type, multiclass_nclasses = 0, decay_rate = 2):
+    def __init__(self, input_dim, num_layers, dropout_prob, task_type, num_outputs, multiclass_nclasses = 0, decay_rate = 2):
         super(Classifier, self).__init__()
         self.task_type = task_type
         self.layers = []
         self.d = decay_rate
+        self.num_outputs = num_outputs
         for c, i in enumerate(range(num_layers)):
             if c != num_layers-1:
                 self.layers.append(nn.Linear(input_dim // (self.d**c), input_dim // (self.d**(c+1))))
@@ -55,13 +56,13 @@ class Classifier(nn.Module):
                 self.layers.append(nn.Dropout(p = dropout_prob))
             else:
                 if task_type == 'binary':
-                    self.layers.append(nn.Linear(input_dim // (self.d**c), 1))
+                    self.layers.append(nn.Linear(input_dim // (self.d**c), num_outputs))
                     self.layers.append(nn.Sigmoid())
                 elif task_type == 'multiclass':
                     self.layers.append(nn.Linear(input_dim // (self.d**c), multiclass_nclasses))
                     self.layers.append(nn.Softmax(dim = 1))
                 elif task_type == 'regression':
-                    self.layers.append(nn.Linear(input_dim // (self.d**c), 1))
+                    self.layers.append(nn.Linear(input_dim // (self.d**c), num_outputs))
                     self.layers.append(nn.ReLU())
                 else:
                     raise Exception('Invalid task type!')
@@ -71,11 +72,14 @@ class Classifier(nn.Module):
     def forward(self, x):
         '''
         x: batch_size*input_dim
-        output: batch_size*1
+        output: batch_size*num_outputs
         '''
         for i in range(len(self.layers)):
             x = self.layers[i](x)
-        return x.squeeze(dim = 1)
+        if self.num_outputs == 1:
+            return x.squeeze(dim = 1)
+        else:
+            return x
 
 
 def get_emb_size(emb_method):
