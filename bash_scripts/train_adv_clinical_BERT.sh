@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --partition gpu
-#SBATCH --gres gpu:8
+#SBATCH --partition p100 
+#SBATCH --gres gpu:4
 #SBATCH -c 8
 #SBATCH --output train_adv%A.log
-#SBATCH --mem 160gb
+#SBATCH --mem 120gb
 set -e
 source activate hurtfulwords
 

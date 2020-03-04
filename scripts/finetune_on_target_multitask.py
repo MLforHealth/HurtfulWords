@@ -33,7 +33,7 @@ parser.add_argument('--eval_batch_size', help = 'batch size to use for evaluatio
 
 parser.add_argument('--dev_folds', help = 'what fold to use as the DEV fold. Dataframe must have a "fold" column',nargs = '+', type=str, dest = 'dev_folds', default = [])
 parser.add_argument('--test_folds', help = 'what fold to use as the TEST fold. Dataframe must have a "fold" column',nargs = '+', type=str, dest = 'test_folds', default = [])
-parser.add_argument('--emb_method', default = 'last', const = 'last', nargs = '?', choices = ['last', 'sum4', 'cat4'], help = 'what embedding layer to take')
+parser.add_argument('--emb_method', default = 'cat4', const = 'cat4', nargs = '?', choices = ['last', 'sum4', 'cat4'], help = 'what embedding layer to take')
 
 parser.add_argument('--use_adversary', help = "whether or not to use an adversary. If True, must not have --freeze_bert", action = 'store_true')
 parser.add_argument('--lm', help = 'lambda value for the adversary', type = float, default = 1.0)
@@ -45,7 +45,7 @@ parser.add_argument('--max_num_epochs', help = 'maximum number of epochs to trai
 parser.add_argument('--es_patience', help = 'patience for the early stopping', type = int, default = 3)
 parser.add_argument('--other_fields', help = 'other fields to add, must be columns in df', nargs = '+', type = str, dest = 'other_fields', default = [])
 parser.add_argument('--seed', type = int, default = 42, help = 'random seed for initialization')
-parser.add_argument('--lr', type = float, default = 1e-3, help = 'learning rate for BertAdam optimizer')
+parser.add_argument('--lr', type = float, default = 5e-3, help = 'learning rate for BertAdam optimizer')
 
 args = parser.parse_args()
 print(vars(args))
@@ -262,7 +262,7 @@ else:
 
 no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
 optimizer_grouped_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.0}, #no weight decay
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
             ]
 
