@@ -6,7 +6,7 @@ If you use this code in your research, please cite the following publication:
 ## Pretrained Models
 The pretrained BERT models used in our experiments are available to download here:
 - [Baseline_Clinical_BERT](https://www.cs.toronto.edu/pub/haoran/hurtfulwords/baseline_clinical_BERT_1_epoch_512.tar.gz)
-- [Attempt_Adversarially_Debiased_Clinical_BERT](https://www.cs.toronto.edu/pub/haoran/hurtfulwords/adv_clinical_BERT_1_epoch_512.tar.gz)
+- [Adversarially_Debiased_Clinical_BERT](https://www.cs.toronto.edu/pub/haoran/hurtfulwords/adv_clinical_BERT_1_epoch_512.tar.gz) (Gender)
 
 
 ## Step 0: Environment and Prerequisites
@@ -34,7 +34,7 @@ Pretrains baseline clinical BERT (initialized from SciBERT) for 1 epoch on seque
 ## Step 3: Training Adversarial Clinical BERT
 Pretrains clinical BERT (initialized from SciBERT) with adversarial debiasing using gender as the protected attribute, for 1 epoch on sequences of length 128, then 1 epoch on sequences of length 512. 
 - In `bash_scripts/train_adv_clinical_bert.sh`, update `BASE_DIR`, `OUTPUT_DIR`, and `SCIBERT_DIR`. These variables should have the same values as in step 1.
-- Run `bash_scripts/train_adv_clinical_bert.sh` on a GPU cluster. The resultant model will be saved in `${OUTPUT_DIR}/models/adv_clinical_BERT_1_epoch_512/`.
+- Run `bash_scripts/train_adv_clinical_bert.sh gender` on a GPU cluster. The resultant model will be saved in `${OUTPUT_DIR}/models/adv_clinical_BERT_gender_1_epoch_512/`.
 
 
 ## Step 4: Finetuning on Downstream Tasks
@@ -45,17 +45,18 @@ Generates static BERT representations for the downstream tasks created in Step 1
 ## Step 5: Analyze Downstream Task Results
 Evalutes test-set predictions of the trained models, by generating various fairness metrics.
 - In `bash_scripts/analyze_results.sh`, update `BASE_DIR` and `OUTPUT_DIR`. Run this script, which will output a .xlsx file containing fairness metrics to each of the finetuned model folders.
-- The Jupyter Notebook `notebooks/MergeResults.ipynb` will read in each of the generated metrics files and aggregate them into a single dataframe, which can be viewed in the notebook or saved to disk.
+- The Jupyter Notebook `notebooks/MergeResults.ipynb` will read in each of the generated metrics files which can then be viewed in the notebook.
 
 ## Step 6: Log Probabiltiy Bias Scores
 Following procedures in [Kurita et al.](http://arxiv.org/abs/1906.07337), we calculate the 'log probability bias score' to evaluate biases in the BERT model. Template sentences should be in the example format provided by `fill_in_blanks_examples/templates.txt`. A CSV file denoting context key words and the context category should alshould also be suppled (see `fill_in_blanks_examples/attributes.csv`). 
 
 This step can be done independently of steps 4 and 5.
 - In `bash_scripts/log_probability.sh`, update `BASE_DIR`, `OUTPUT_DIR`, and `MODEL_NAME`. Run this script.
-- The statistical significance results can be found in `${OUTPUT_DIR}/${MODEL_NAME}_log_scores.tsv`. 
+- The statistical significance results can be found in `${OUTPUT_DIR}/${MODEL_NAME}_log_scores.tsv`.
+- The notebook `notebooks/GetBasePrevs.ipynb` computes the base prevalences for categories in the notes.
 
 ## Step 7: Sentence Completion
 `scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. Template sentences can be specified directly in the script.
 
 This step can be done independently of steps 1-6.
-- In `scripts/predict_missing.py`, update `OUTPUT_DIR` and `SCIBERT_DIR`. Run this script in the Conda environment. The results (most likely sentence, as well as top 20 words) can be found in `${OUTPUT_DIR}/sentence_completion_results.txt`.
+- In `scripts/predict_missing.py`, update `OUTPUT_DIR` and `SCIBERT_DIR`. Run this script in the Conda environment. The results can be found in `${OUTPUT_DIR}/sentence_completion_results.txt`.
