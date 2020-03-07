@@ -59,4 +59,4 @@ This step can be done independently of steps 4 and 5.
 `scripts/predict_missing.py` takes template sentences which contain `_` for tokens to be predicted. Template sentences can be specified directly in the script.
 
 This step can be done independently of steps 1-6.
-- In `scripts/predict_missing.py`, update `OUTPUT_DIR` and `SCIBERT_DIR`. Run this script in the Conda environment. The results can be found in `${OUTPUT_DIR}/sentence_completion_results.txt`.
+- In `scripts/predict_missing.py`, update `SCIBERT_DIR`. Run this script in the Conda environment. The results will be printed to the screen.
