@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition gpu 
+#SBATCH --partition t4 
 #SBATCH --gres gpu:1
 #SBATCH -c 8
 #SBATCH --output=finetune_%A.out
@@ -13,9 +13,7 @@ set -e
 source activate hurtfulwords
 
 BASE_DIR="/h/haoran/projects/HurtfulWords"
-OUTPUT_DIR="/h/haoran/projects/HurtfulWords/data/"
-mkdir -p "$OUTPUT_DIR/models/finetuned/"
-mkdir -p "$OUTPUT_DIR/results/"
+OUTPUT_DIR="/scratch/hdd001/home/haoran/shared_data/HurtfulWords/data"
 
 cd "$BASE_DIR/scripts"
 

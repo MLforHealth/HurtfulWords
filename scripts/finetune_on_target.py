@@ -54,7 +54,12 @@ parser.add_argument('--gridsearch_c', help = 'whether to run a grid search over 
 parser.add_argument('--use_new_mapping', help = 'whether to use new mapping for adversarial training', action = 'store_true')
 parser.add_argument('--pregen_emb_path', help = '''if embeddings have been precomputed, can provide a path here (as a pickled dictionary mapping note_id:numpy array).
                         Will only be used if freeze_bert. note_ids in this dictionary must a be a superset of the note_ids in df_path''', type = str)
+parser.add_argument('--overwrite', help = 'whether to overwrite existing model/predictions', action = 'store_true')
 args = parser.parse_args()
+
+if os.path.isfile(os.path.join(args.output_dir, 'preds.pkl')) and not args.overwrite:
+    print("File already exists; exiting.")
+    sys.exit()
 
 print('Reading dataframe...', flush = True)
 df = pd.read_pickle(args.df_path)
@@ -278,7 +283,7 @@ if not args.pregen_emb_path:
                                             Constants.MAX_SEQ_LEN, tokenizer, output_mode = ('regression' if args.task_type == 'regression' else 'classification'))
 
     training_set = MIMICDataset(features_train, 'train' ,args.task_type)
-    training_generator = data.DataLoader(training_set, shuffle = True,  batch_size = args.train_batch_size)
+    training_generator = data.DataLoader(training_set, shuffle = True,  batch_size = args.train_batch_size, drop_last = True)
 
     val_set = MIMICDataset(features_eval, 'val', args.task_type)
     val_generator = data.DataLoader(val_set, shuffle = False,  batch_size = args.train_batch_size)
@@ -296,7 +301,7 @@ if args.freeze_bert: #only need to precalculate for training and val set
         features_train_embs = get_embs(training_generator)
         features_val_embs = get_embs(val_generator)
         features_test_embs = get_embs(test_generator)
-    training_generator = data.DataLoader(Embdataset(features_train_embs, 'train'), shuffle = True,  batch_size = args.train_batch_size)
+    training_generator = data.DataLoader(Embdataset(features_train_embs, 'train'), shuffle = True, batch_size = args.train_batch_size, drop_last = True)
     val_generator = data.DataLoader(Embdataset(features_val_embs, 'val'), shuffle = False,  batch_size = args.train_batch_size)
     test_generator= data.DataLoader(Embdataset(features_test_embs, 'test'), shuffle = False,  batch_size = args.train_batch_size)
 
@@ -447,8 +452,6 @@ for predictor_params in grid:
         with tqdm(total=len(training_generator), desc="Epoch %s"%epoch) as pbar:
             if not args.freeze_bert:
                 for input_ids, input_mask, segment_ids, y, group, _, other_vars in training_generator:
-                    if len(y) == 1: #prevents batchnorm error with one sample
-                        break
                     input_ids = input_ids.to(device)
                     segment_ids = segment_ids.to(device)
                     input_mask = input_mask.to(device)
@@ -491,8 +494,6 @@ for predictor_params in grid:
                     pbar.set_postfix_str("Running Training Loss: %.5f" % mean_loss)
             else: # if frozen, use precomputed embeddings to save time
                 for embs, y,_, other_vars in training_generator:
-                    if len(y) == 1: #prevents batchnorm error with one sample
-                        break
                     embs = embs.to(device)
                     y = y.to(device)
                     for i in other_vars:
