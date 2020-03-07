@@ -32,7 +32,7 @@ cols = ['Acute and unspecified renal failure',
  'any_acute',
  'any_disease']
 
-std_models = ['baseline_clinical_BERT_1_epoch_512', 'adv_clinical_BERT_1_epoch_512']
+std_models = ['baseline_clinical_BERT_1_epoch_512', 'adv_clinical_BERT_gender_1_epoch_512']
 
 # file name, col names, models
 tasks = [('inhosp_mort', ['inhosp_mort'],  std_models),
