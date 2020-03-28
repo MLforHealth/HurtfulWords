@@ -1,7 +1,16 @@
 # Hurtful Words: Quantifying Biases in Clinical Contextual Word Embeddings
 
 ## Paper
-If you use this code in your research, please cite the following publication:
+If you use this code in your research, please cite the following [publication](https://dl.acm.org/doi/abs/10.1145/3368555.3384448):
+
+```
+Haoran Zhang, Amy X. Lu, Mohamed Abdalla, Matthew McDermott, and Marzyeh Ghassemi. 2020.
+Hurtful words: quantifying biases in clinical contextual word embeddings.
+In Proceedings of the ACM Conference on Health, Inference, and Learning (CHIL ’20).
+Association for Computing Machinery, New York, NY, USA, 110–120.
+```
+
+A publically available version of this paper is also on [arXiv](https://arxiv.org/abs/2003.11515).
 
 ## Pretrained Models
 The pretrained BERT models used in our experiments are available to download here:
